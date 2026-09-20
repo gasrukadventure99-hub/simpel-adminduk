@@ -32,7 +32,7 @@ export function generatePdfReceipt(app: ApplicationRecord): void {
   doc.setFont('helvetica', 'normal');
   doc.setFontSize(9);
   doc.setTextColor(71, 85, 105); // Slate 600
-  doc.text('Sistem Informasi Pelayanan Administrasi Kependudukan (SI-ADMINDUK) Online Mandiri', pageWidth / 2, y, { align: 'center' });
+  doc.text('Simpel Adminduk (Sistem Pelayanan Administrasi Kependudukan) Online Mandiri', pageWidth / 2, y, { align: 'center' });
   y += 4;
 
   doc.setFontSize(7.5);
@@ -294,7 +294,7 @@ export function generatePdfReceipt(app: ApplicationRecord): void {
   doc.setFontSize(6.5);
   doc.setTextColor(148, 163, 184);
   const printTimestamp = new Date().toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' });
-  doc.text(`Dicetak secara otomatis oleh Sistem SI-ADMINDUK Kabupaten Subang pada: ${printTimestamp} WIB`, pageWidth / 2, 288, { align: 'center' });
+  doc.text(`Dicetak secara otomatis oleh Simpel Adminduk (Sistem Pelayanan Administrasi Kependudukan) Kabupaten Subang pada: ${printTimestamp} WIB`, pageWidth / 2, 288, { align: 'center' });
 
   // Save the document directly as PDF file
   const sanitizedFilename = `Resi_Pendaftaran_${app.registrationNumber.replace(/[^a-zA-Z0-9_-]/g, '_')}.pdf`;

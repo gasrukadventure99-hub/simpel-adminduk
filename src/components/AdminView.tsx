@@ -161,13 +161,13 @@ export const AdminView: React.FC<AdminViewProps> = ({
         <div>
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-orange-500 text-white text-xs font-black border border-white mb-2 shadow-xs">
             <Shield className="w-3.5 h-3.5 text-white" />
-            Panel Kerja Petugas Verifikasi Disdukcapil • Kab. Subang
+            Petugas Disdukcapil Subang • Simpel Adminduk
           </div>
           <h2 className="text-2xl font-extrabold tracking-tight text-white">
-            Dashboard Manajemen & Verifikasi Adminduk Kabupaten Subang
+            Dashboard Simpel Adminduk Kabupaten Subang
           </h2>
           <p className="text-slate-100 text-xs sm:text-sm mt-1">
-            Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Subang • Validasi berkas persyaratan pemohon, kelola akun pengguna (CRUD), ubah status dengan alasan, serta pantau analitik pelayanan.
+            Sistem Pelayanan Administrasi Kependudukan • Disdukcapil Kabupaten Subang: Validasi berkas persyaratan pemohon, kelola akun pengguna (CRUD), ubah status dengan alasan, serta pantau analitik pelayanan.
           </p>
         </div>
 

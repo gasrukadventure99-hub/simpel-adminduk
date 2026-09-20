@@ -46,15 +46,18 @@ export const PublicLanding: React.FC<PublicLandingProps> = ({
         <div className="relative z-10 max-w-3xl space-y-4">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-500 text-white text-xs font-black border border-white shadow-sm">
             <Sparkles className="w-3.5 h-3.5 text-white" />
-            Layanan Adminduk Mandiri 24 Jam • Disdukcapil Kab. Subang
+            Simpel Adminduk • Layanan Mandiri 24 Jam Disdukcapil Kab. Subang
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white leading-tight">
-            Pelayanan Administrasi Kependudukan Online Kabupaten Subang
+            Simpel Adminduk
+            <span className="block text-xl sm:text-2xl lg:text-3xl text-sky-300 font-semibold mt-1">
+              Sistem Pelayanan Administrasi Kependudukan Kabupaten Subang
+            </span>
           </h1>
 
           <p className="text-slate-100 text-sm sm:text-base leading-relaxed">
-            Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Subang menyediakan layanan pengajuan KTP-el, Kartu Keluarga, dan Akta Kelahiran secara mandiri dari rumah tanpa antre. Pantau perkembangan berkas dan terima notifikasi resmi langsung melalui WhatsApp.
+            Melalui <strong>Simpel Adminduk</strong>, Dinas Kependudukan dan Pencatatan Sipil (Disdukcapil) Kabupaten Subang menyediakan layanan pengajuan KTP-el, Kartu Keluarga, dan Akta Kelahiran secara mandiri dari rumah tanpa antre. Pantau perkembangan berkas dan terima notifikasi resmi langsung melalui WhatsApp.
           </p>
 
           <div className="pt-4 flex flex-wrap items-center gap-3">

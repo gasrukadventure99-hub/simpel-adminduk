@@ -29,7 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
             </span>
             <span className="font-semibold tracking-wide text-white text-[11px] sm:text-xs">
-              PEMERINTAH KABUPATEN SUBANG • SISTEM PELAYANAN ADMINISTRASI KEPENDUDUKAN (ADMINDUK)
+              PEMERINTAH KABUPATEN SUBANG • SIMPEL ADMINDUK (SISTEM PELAYANAN ADMINISTRASI KEPENDUDUKAN)
             </span>
           </div>
           <div className="hidden sm:flex items-center gap-4 text-slate-200 text-[11px]">
@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-white flex items-center gap-1.5">
-                    SI-ADMINDUK ONLINE
+                    SIMPEL ADMINDUK
                     <span className="text-[10px] px-2.5 py-0.5 font-black bg-sky-500 text-white rounded-full border border-white shadow-xs">
                       KABUPATEN SUBANG
                     </span>
@@ -66,7 +66,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <p className="text-xs text-blue-100 font-medium">
                   {currentUser?.role === 'ADMIN'
                     ? 'Panel Verifikasi & Validasi Petugas Disdukcapil Kabupaten Subang'
-                    : 'Dinas Kependudukan dan Pencatatan Sipil • Pendaftaran KTP-el, KK, dan Akta'}
+                    : 'Sistem Pelayanan Administrasi Kependudukan • Disdukcapil Kab. Subang'}
                 </p>
               </div>
             </div>

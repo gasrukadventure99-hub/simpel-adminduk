@@ -339,13 +339,13 @@ export const UserView: React.FC<UserViewProps> = ({
         <div className="relative z-10 max-w-3xl">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 border border-blue-400/30 text-blue-200 text-xs font-semibold mb-3">
             <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-            Layanan Adminduk Mandiri Online
+            Simpel Adminduk • Layanan Mandiri Online
           </div>
           <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white mb-2">
-            Portal Permohonan Dokumen Kependudukan
+            Portal Simpel Adminduk Subang
           </h2>
           <p className="text-blue-100/90 text-xs sm:text-sm leading-relaxed">
-            Ajukan permohonan KTP-el, Kartu Keluarga, dan Akta Kelahiran secara mandiri, pantau status verifikasi secara real-time, dan unduh serta cetak resi bukti pendaftaran resmi Disdukcapil.
+            Sistem Pelayanan Administrasi Kependudukan: Ajukan permohonan KTP-el, Kartu Keluarga, dan Akta Kelahiran secara mandiri, pantau status verifikasi secara real-time, dan unduh serta cetak resi bukti pendaftaran resmi Disdukcapil Kabupaten Subang.
           </p>
         </div>
       </div>

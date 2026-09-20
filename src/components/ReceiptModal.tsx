@@ -145,7 +145,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ application, onClose
           <div className="flex items-center gap-2.5">
             <Eye className="w-4 h-4 text-blue-600 shrink-0" />
             <span>
-              <strong>Pratinjau Dokumen Resmi:</strong> Tampilan di bawah ini merupakan wujud tanda terima sah pendaftaran SI-ADMINDUK. Silakan pilih <strong>Cetak ke Printer</strong> atau <strong>Simpan ke PDF</strong> di tombol yang tersedia.
+              <strong>Pratinjau Dokumen Resmi:</strong> Tampilan di bawah ini merupakan wujud tanda terima sah pendaftaran <strong>Simpel Adminduk</strong>. Silakan pilih <strong>Cetak ke Printer</strong> atau <strong>Simpan ke PDF</strong> di tombol yang tersedia.
             </span>
           </div>
         </div>
@@ -162,7 +162,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({ application, onClose
               DINAS KEPENDUDUKAN DAN PENCATATAN SIPIL
             </div>
             <div className="text-xs text-slate-600 mt-1">
-              Sistem Informasi Pelayanan Administrasi Kependudukan (SI-ADMINDUK) Online Mandiri
+              Simpel Adminduk (Sistem Pelayanan Administrasi Kependudukan) Online Mandiri
             </div>
             <div className="text-[11px] text-slate-500 italic mt-0.5">
               Jl. Raya Dangdeur KM. 2 Subang | Website: disdukcapil.subangkab.go.id | Helpdesk: 1500-537

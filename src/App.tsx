@@ -761,7 +761,7 @@ export default function App() {
           <div className="text-center md:text-left">
             <h4 className="font-extrabold text-white text-sm flex items-center justify-center md:justify-start gap-2">
               <Shield className="w-4 h-4 text-sky-400" />
-              Sistem Informasi Pelayanan Administrasi Kependudukan Online Kabupaten Subang
+              Simpel Adminduk (Sistem Pelayanan Administrasi Kependudukan) Kabupaten Subang
             </h4>
             <p className="mt-1 text-slate-300 text-xs">
               Mewujudkan pelayanan Adminduk yang cepat, transparan, terintegrasi, dan ramah masyarakat.

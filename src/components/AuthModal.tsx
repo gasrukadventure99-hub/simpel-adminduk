@@ -130,14 +130,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="font-bold text-base tracking-tight text-white">
-                  PORTAL AUTENTIKASI ADMINDUK
+                  PORTAL SIMPEL ADMINDUK
                 </h3>
                 <span className="text-[10px] px-2 py-0.5 font-bold bg-orange-500 text-white rounded-full">
                   SUBANG
                 </span>
               </div>
               <p className="text-xs text-blue-200">
-                Disdukcapil Kabupaten Subang • Pelayanan Mandiri Online
+                Sistem Pelayanan Administrasi Kependudukan • Disdukcapil Kab. Subang
               </p>
             </div>
           </div>
