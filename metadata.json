@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Pendaftaran Online Adminduk",
+  "description": "Sistem Pendaftaran Online Pelayanan Administrasi Kependudukan (Adminduk) untuk pengajuan KTP-el, KK, dan Akta Kelahiran serta pengelolaan permohonan oleh petugas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
