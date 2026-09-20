@@ -4,7 +4,7 @@ import {
   FileText, CheckCircle2, AlertTriangle, Clock, Search, 
   Filter, Eye, Check, X, Printer, Shield, ArrowUpDown, 
   RotateCcw, Plus, ChevronLeft, ChevronRight, UserCheck, MessageCircle,
-  BarChart3, Layers, LogOut, Users, Edit3, Trash2, PlusCircle, KeyRound
+  BarChart3, Layers, LogOut, Users, Edit3, Trash2, PlusCircle, KeyRound, Database
 } from 'lucide-react';
 import { UserManagementView } from './UserManagementView';
 import { ApplicationEditModal } from './ApplicationEditModal';
@@ -19,6 +19,8 @@ interface AdminViewProps {
   onResetMockData: () => void;
   onAddRandomMock: () => void;
   onOpenWhatsAppModal?: () => void;
+  onOpenSupabaseModal?: () => void;
+  isSupabaseActive?: boolean;
   onLogout: () => void;
   // User CRUD Props
   accounts: UserAccount[];
@@ -42,6 +44,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
   onResetMockData,
   onAddRandomMock,
   onOpenWhatsAppModal,
+  onOpenSupabaseModal,
+  isSupabaseActive = false,
   onLogout,
   accounts,
   currentUserId,
@@ -169,6 +173,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
         {/* Action Tools & LOGOUT BUTTON */}
         <div className="flex flex-wrap items-center gap-2.5">
+          {/* SUPABASE CLOUD DATABASE CONNECTION (KHUSUS ADMIN) */}
+          {onOpenSupabaseModal && (
+            <button
+              id="btn-admin-supabase-config"
+              onClick={onOpenSupabaseModal}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-white text-xs font-bold border-2 border-white shadow-xs transition ${
+                isSupabaseActive
+                  ? 'bg-emerald-700 hover:bg-emerald-800'
+                  : 'bg-blue-950/90 hover:bg-blue-900'
+              }`}
+              title="Pengaturan Koneksi Database Cloud Supabase (Khusus Role Admin)"
+            >
+              <Database className={`w-4 h-4 ${isSupabaseActive ? 'text-emerald-300' : 'text-amber-400'}`} />
+              <span>Koneksi Supabase</span>
+              <span
+                className={`w-2 h-2 rounded-full ${
+                  isSupabaseActive ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                }`}
+              />
+            </button>
+          )}
+
           {onOpenWhatsAppModal && (
             <button
               id="btn-admin-open-wa"
@@ -414,13 +440,28 @@ export const AdminView: React.FC<AdminViewProps> = ({
           <div className="p-5 border-b border-slate-200 bg-slate-50/50 space-y-4">
             <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
               <div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-bold text-base text-slate-900">
                     Tabel Manajemen Berkas & Dokumen Persyaratan
                   </h3>
                   <span className="text-[10px] px-2 py-0.5 rounded bg-orange-100 text-orange-800 font-black border border-orange-200">
                     CRUD Permohonan Aktif
                   </span>
+                  {onOpenSupabaseModal && (
+                    <button
+                      onClick={onOpenSupabaseModal}
+                      className={`text-[10px] px-2.5 py-0.5 rounded-md font-bold border flex items-center gap-1.5 transition cursor-pointer shadow-2xs ${
+                        isSupabaseActive
+                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
+                          : 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                      }`}
+                      title="Klik untuk membuka pengaturan koneksi Supabase (Khusus Admin)"
+                    >
+                      <Database className="w-3 h-3 text-emerald-600" />
+                      <span>{isSupabaseActive ? 'Supabase Cloud: Terhubung' : 'Penyimpanan: Lokal (Atur Supabase)'}</span>
+                      <span className={`w-1.5 h-1.5 rounded-full ${isSupabaseActive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'}`} />
+                    </button>
+                  )}
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
                   Kelola data pemohon (Create, Read, Update, Delete), verifikasi kelayakan berkas, dan ubah status pendaftaran.

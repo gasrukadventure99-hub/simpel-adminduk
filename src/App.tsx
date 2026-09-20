@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { 
   ApplicationRecord, 
   ApplicationStatus, 
@@ -21,7 +21,21 @@ import { ReceiptModal } from './components/ReceiptModal';
 import { StatusChangeModal } from './components/StatusChangeModal';
 import { DetailModal } from './components/DetailModal';
 import { ExportHtmlModal } from './components/ExportHtmlModal';
-import { CheckCircle2, AlertTriangle, Info, Shield, MessageCircle, LogIn, UserPlus } from 'lucide-react';
+import { SupabaseConfigModal } from './components/SupabaseConfigModal';
+import { CheckCircle2, AlertTriangle, Info, Shield, MessageCircle, LogIn, UserPlus, Database } from 'lucide-react';
+import {
+  isSupabaseConfigured,
+  fetchApplicationsFromSupabase,
+  insertApplicationToSupabase,
+  updateApplicationStatusInSupabase,
+  deleteApplicationFromSupabase,
+  fetchAccountsFromSupabase,
+  insertAccountToSupabase,
+  deleteAccountFromSupabase,
+  fetchNotificationsFromSupabase,
+  insertNotificationToSupabase,
+  supabase
+} from './lib/supabase';
 
 const STORAGE_KEY_APPS = 'si_adminduk_applications_v2';
 const STORAGE_KEY_ACCOUNTS = 'si_adminduk_accounts_v2';
@@ -93,6 +107,8 @@ export default function App() {
   } | null>(null);
   const [activeDetailApp, setActiveDetailApp] = useState<ApplicationRecord | null>(null);
   const [isExportHtmlOpen, setIsExportHtmlOpen] = useState(false);
+  const [isSupabaseModalOpen, setIsSupabaseModalOpen] = useState(false);
+  const [supabaseConfigVersion, setSupabaseConfigVersion] = useState(0);
 
   // 6. Toast notifications
   const [toastMessage, setToastMessage] = useState<{
@@ -138,6 +154,69 @@ export default function App() {
     }
   }, [whatsappNotifications]);
 
+  // =========================================================================
+  // SUPABASE CLOUD DATABASE SYNCHRONIZATION & REALTIME LISTENER
+  // =========================================================================
+  const isSupabaseActive = useMemo(() => {
+    // Re-evaluate whenever config version changes
+    return isSupabaseConfigured();
+  }, [supabaseConfigVersion]);
+  const [isSyncingWithSupabase, setIsSyncingWithSupabase] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (isSupabaseActive) {
+      setIsSyncingWithSupabase(true);
+      Promise.all([
+        fetchApplicationsFromSupabase(),
+        fetchAccountsFromSupabase(),
+        fetchNotificationsFromSupabase(),
+      ])
+        .then(([remoteApps, remoteAccounts, remoteNotifs]) => {
+          if (remoteApps && remoteApps.length > 0) {
+            setApplications(remoteApps);
+          } else if (remoteApps && remoteApps.length === 0 && applications.length > 0) {
+            // Seed initial applications if remote table is freshly created
+            applications.forEach((app) => insertApplicationToSupabase(app));
+          }
+
+          if (remoteAccounts && remoteAccounts.length > 0) {
+            setAccounts(remoteAccounts);
+          } else if (remoteAccounts && remoteAccounts.length === 0 && accounts.length > 0) {
+            accounts.forEach((acc) => insertAccountToSupabase(acc));
+          }
+
+          if (remoteNotifs && remoteNotifs.length > 0) {
+            setWhatsappNotifications(remoteNotifs);
+          }
+          setIsSyncingWithSupabase(false);
+        })
+        .catch((err) => {
+          console.warn('[Supabase Sync Error]', err);
+          setIsSyncingWithSupabase(false);
+        });
+
+      // Realtime subscription for instant multi-device synchronization
+      if (supabase) {
+        const channel = supabase
+          .channel('realtime_adminduk_channel')
+          .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'applications' },
+            () => {
+              fetchApplicationsFromSupabase().then((apps) => {
+                if (apps && apps.length > 0) setApplications(apps);
+              });
+            }
+          )
+          .subscribe();
+
+        return () => {
+          supabase.removeChannel(channel);
+        };
+      }
+    }
+  }, [isSupabaseActive, supabaseConfigVersion]);
+
   const showToast = (text: string, type: 'success' | 'info' | 'error' = 'success', waInfo = false) => {
     setToastMessage({ text, type, waInfo });
     setTimeout(() => {
@@ -164,6 +243,11 @@ export default function App() {
   const handleRegisterSuccess = (newAccount: UserAccount) => {
     setAccounts((prev) => [newAccount, ...prev]);
 
+    // Save to Supabase Cloud Database if configured
+    if (isSupabaseActive) {
+      insertAccountToSupabase(newAccount);
+    }
+
     // Send welcome WhatsApp notification
     const welcomeWa: WhatsAppNotification = {
       id: `wa-${Date.now()}`,
@@ -178,6 +262,10 @@ export default function App() {
     };
 
     setWhatsappNotifications((prev) => [welcomeWa, ...prev]);
+    if (isSupabaseActive) {
+      insertNotificationToSupabase(welcomeWa);
+    }
+
     showToast(`Registrasi akun pemohon berhasil! Pesan konfirmasi dikirim ke WhatsApp Anda.`, 'success', true);
   };
 
@@ -194,6 +282,11 @@ export default function App() {
     };
     setApplications((prev) => [recordWithUser, ...prev]);
 
+    // Save directly to Supabase Cloud PostgreSQL
+    if (isSupabaseActive) {
+      insertApplicationToSupabase(recordWithUser);
+    }
+
     // Automated WhatsApp confirmation notification
     const newWa: WhatsAppNotification = {
       id: `wa-${Date.now()}`,
@@ -208,9 +301,12 @@ export default function App() {
     };
 
     setWhatsappNotifications((prev) => [newWa, ...prev]);
+    if (isSupabaseActive) {
+      insertNotificationToSupabase(newWa);
+    }
 
     showToast(
-      `Permohonan ${newApp.serviceTitle} berhasil dikirim! Notifikasi WhatsApp otomatis telah dikirim ke nomor ${newApp.phone}.`,
+      `Permohonan ${newApp.serviceTitle} berhasil dikirim! Data tersimpan ${isSupabaseActive ? 'di Cloud Supabase' : 'permanen'} & Notifikasi WA terkirim.`,
       'success',
       true
     );
@@ -286,6 +382,22 @@ export default function App() {
       };
 
       setWhatsappNotifications((prev) => [newWa, ...prev]);
+      if (isSupabaseActive) {
+        insertNotificationToSupabase(newWa);
+      }
+    }
+
+    // Persist status change to Supabase Cloud PostgreSQL
+    if (isSupabaseActive) {
+      updateApplicationStatusInSupabase(applicationId, {
+        status: newStatus,
+        updatedAt: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        processedBy: details.officerName || 'Drs. Hendra Irawan (Disdukcapil)',
+        rejectionReason: details.rejectionReason,
+        approvalNotes: details.approvalNotes,
+        pickupEstimatedDate: details.pickupEstimatedDate,
+        pickupLocation: details.pickupLocation,
+      });
     }
 
     setStatusChangeTarget(null);
@@ -299,18 +411,27 @@ export default function App() {
 
   const handleSendManualWa = (notif: WhatsAppNotification) => {
     setWhatsappNotifications((prev) => [notif, ...prev]);
+    if (isSupabaseActive) {
+      insertNotificationToSupabase(notif);
+    }
     showToast(`Pesan WhatsApp manual berhasil dikirim ke ${notif.recipientName} (${notif.recipientPhone})!`, 'success', true);
   };
 
   // User CRUD Handlers
   const handleCreateUser = (newAccount: UserAccount) => {
     setAccounts((prev) => [newAccount, ...prev]);
+    if (isSupabaseActive) {
+      insertAccountToSupabase(newAccount);
+    }
   };
 
   const handleUpdateUser = (updatedAccount: UserAccount) => {
     setAccounts((prev) =>
       prev.map((acc) => (acc.id === updatedAccount.id ? updatedAccount : acc))
     );
+    if (isSupabaseActive) {
+      insertAccountToSupabase(updatedAccount);
+    }
     if (currentUser && currentUser.id === updatedAccount.id) {
       setCurrentUser(updatedAccount);
     }
@@ -318,6 +439,9 @@ export default function App() {
 
   const handleDeleteUser = (userId: string) => {
     setAccounts((prev) => prev.filter((acc) => acc.id !== userId));
+    if (isSupabaseActive) {
+      deleteAccountFromSupabase(userId);
+    }
   };
 
   // Application CRUD Handlers (Update & Delete)
@@ -325,10 +449,16 @@ export default function App() {
     setApplications((prev) =>
       prev.map((app) => (app.id === updatedApp.id ? updatedApp : app))
     );
+    if (isSupabaseActive) {
+      insertApplicationToSupabase(updatedApp);
+    }
   };
 
   const handleDeleteApplication = (appId: string) => {
     setApplications((prev) => prev.filter((app) => app.id !== appId));
+    if (isSupabaseActive) {
+      deleteApplicationFromSupabase(appId);
+    }
   };
 
   const handleResetMockData = () => {
@@ -468,7 +598,6 @@ export default function App() {
         onOpenLogin={handleOpenLogin}
         onLogout={handleLogout}
         onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
-        onOpenExportHtml={() => setIsExportHtmlOpen(true)}
         pendingCount={pendingCount}
         waUnreadCount={whatsappNotifications.length}
       />
@@ -535,6 +664,8 @@ export default function App() {
             onResetMockData={handleResetMockData}
             onAddRandomMock={handleAddRandomMock}
             onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
+            onOpenSupabaseModal={() => setIsSupabaseModalOpen(true)}
+            isSupabaseActive={isSupabaseActive}
             onLogout={handleLogout}
             accounts={accounts}
             currentUserId={currentUser?.id}
@@ -609,6 +740,21 @@ export default function App() {
         <ExportHtmlModal onClose={() => setIsExportHtmlOpen(false)} />
       )}
 
+      {/* 7. Supabase Cloud Database Connection Modal (Khusus Role ADMIN) */}
+      {currentUser?.role === 'ADMIN' && (
+        <SupabaseConfigModal
+          isOpen={isSupabaseModalOpen}
+          onClose={() => setIsSupabaseModalOpen(false)}
+          applications={applications}
+          accounts={accounts}
+          notifications={whatsappNotifications}
+          onConnectionSuccess={(msg) => {
+            showToast(msg, 'success');
+            setSupabaseConfigVersion((v) => v + 1);
+          }}
+        />
+      )}
+
       {/* Government Footer - Modern Civic Palette: Putih, Abu muda, Biru primary, Biru muda secondary accent */}
       <footer className="no-print bg-gradient-to-r from-blue-900 via-blue-800 to-indigo-950 text-slate-200 border-t-2 border-white/20 text-xs py-8 mt-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
@@ -663,13 +809,6 @@ export default function App() {
                 </button>
               </div>
             )}
-
-            <button
-              onClick={() => setIsExportHtmlOpen(true)}
-              className="px-3.5 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-600 text-white border-2 border-white text-xs font-black transition shadow-sm"
-            >
-              📥 Single-File HTML
-            </button>
           </div>
         </div>
       </footer>
